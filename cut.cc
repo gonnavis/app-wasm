@@ -17,24 +17,24 @@ void cut(
 ) {
 
   {
-    // position
-    numOutPositions[0] = numPositions;
-
+    // bak
     float positionBaks[72]; // todo: do not hard code, fix problem in app / physx.js / w.doCut.
     for(int i=0;i<numPositions;i++){
       positionBaks[i] = positions[i];
     }
+    float faceBaks[36]; // todo: do not hard code, fix problem in app / physx.js / w.doCut.
+    for(int i=0;i<numFaces;i++){
+      faceBaks[i] = faces[i];
+    }
+
+    // position
+    numOutPositions[0] = numPositions;
     for(int i=0;i<numPositions;i++){
       outPositions[i] = positionBaks[i];
     }
 
     // face
     numOutFaces[0] = numFaces;
-
-    float faceBaks[36]; // todo: do not hard code, fix problem in app / physx.js / w.doCut.
-    for(int i=0;i<numFaces;i++){
-      faceBaks[i] = faces[i];
-    }
     for(int i=0;i<numFaces;i++){
       outFaces[i] = faceBaks[i];
     }
