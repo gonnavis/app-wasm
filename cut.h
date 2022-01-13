@@ -2,6 +2,7 @@
 // #include "csgjs.cpp"
 // #include "earcut.hpp"
 // #include "TriangleMesh.hpp"
+#include "./threepp/math/Vector2.hpp"
 #include "./threepp/math/Vector3.hpp"
 
 void cut(

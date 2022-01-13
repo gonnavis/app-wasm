@@ -41,14 +41,14 @@ void cut(
   unsigned int facesCount = numFaces / 3;
   // float indices = numFaces / 3;
 
-  std::vector<float> points1;
-  std::vector<float> points2;
+  std::vector<threepp::Vector3> points1;
+  std::vector<threepp::Vector3> points2;
 
-  std::vector<float> normals1;
-  std::vector<float> normals2;
+  std::vector<threepp::Vector3> normals1;
+  std::vector<threepp::Vector3> normals2;
 
-  std::vector<float> uvs1;
-  std::vector<float> uvs2;
+  std::vector<threepp::Vector2> uvs1;
+  std::vector<threepp::Vector2> uvs2;
 
   // threepp::Vector3 _vector1{};
 
@@ -62,33 +62,41 @@ void cut(
     unsigned int vb = getVertexIndex(i, 1, indices);
     unsigned int vc = getVertexIndex(i, 2, indices);
 
-    // threepp::Vector3 v0(coords[3 * va], coords[3 * va + 1], coords[3 * va + 2]);
-    // threepp::Vector3 v1(coords[3 * vb], coords[3 * vb + 1], coords[3 * vb + 2]);
-    // threepp::Vector3 v2(coords[3 * vc], coords[3 * vc + 1], coords[3 * vc + 2]);
+    threepp::Vector3 v0(coords[3 * va], coords[3 * va + 1], coords[3 * va + 2]);
+    threepp::Vector3 v1(coords[3 * vb], coords[3 * vb + 1], coords[3 * vb + 2]);
+    threepp::Vector3 v2(coords[3 * vc], coords[3 * vc + 1], coords[3 * vc + 2]);
+
+    threepp::Vector3 n0(normals[3 * va], normals[3 * va + 1], normals[3 * va + 2]);
+    threepp::Vector3 n1(normals[3 * vb], normals[3 * vb + 1], normals[3 * vb + 2]);
+    threepp::Vector3 n2(normals[3 * vc], normals[3 * vc + 1], normals[3 * vc + 2]);
+
+    threepp::Vector2 u0(uvs[2 * va], uvs[2 * va + 1]);
+    threepp::Vector2 u1(uvs[2 * vb], uvs[2 * vb + 1]);
+    threepp::Vector2 u2(uvs[2 * vc], uvs[2 * vc + 1]);
     
-    points1.push_back(coords[3 * va]);
-    points1.push_back(coords[3 * va + 1]);
-    points1.push_back(coords[3 * va + 2]);
-    
-    points1.push_back(coords[3 * vb]);
-    points1.push_back(coords[3 * vb + 1]);
-    points1.push_back(coords[3 * vb + 2]);
-    
-    points1.push_back(coords[3 * vc]);
-    points1.push_back(coords[3 * vc + 1]);
-    points1.push_back(coords[3 * vc + 2]);
+    points1.push_back(v0);
+    points1.push_back(v1);
+    points1.push_back(v2);
+
+    normals1.push_back(n0);
+    normals1.push_back(n1);
+    normals1.push_back(n2);
+
+    uvs1.push_back(u0);
+    uvs1.push_back(u1);
+    uvs1.push_back(u2);
   }
 
   // outPositions = &points1[0]; // wrong
-  memcpy(outPositions, &points1[0], points1.size()*4);
-  memcpy(outNormals, normals, numNormals*4);
-  memcpy(outUvs, uvs, numUvs*4);
-  memcpy(outFaces, faces, numFaces*4);
+  memcpy(outPositions, &points1[0], points1.size()*3*4);
+  memcpy(outNormals, &normals1[0], normals1.size()*3*4);
+  memcpy(outUvs, &uvs1[0], uvs1.size()*2*4);
+  // memcpy(outFaces, faces, numFaces*4);
 
-  numOutPositions[0] = points1.size();
-  numOutNormals[0] = numNormals;
-  numOutUvs[0] = numUvs;
-  numOutFaces[0] = numFaces;
+  numOutPositions[0] = points1.size()*3;
+  numOutNormals[0] = normals1.size()*3;
+  numOutUvs[0] = uvs1.size()*2;
+  // numOutFaces[0] = numFaces;
 
   numOutPositions[1] = 0;
   numOutNormals[1] = 0;
