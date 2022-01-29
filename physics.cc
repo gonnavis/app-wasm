@@ -569,6 +569,29 @@ void PScene::getGlobalPosition(unsigned int id, float *positions) {
     positions[2] = 0;
   }
 }
+void PScene::getGlobalQuaternion(unsigned int id, float *quaternions) {
+  auto actorIter = std::find_if(actors.begin(), actors.end(), [&](PxRigidActor *actor) -> bool {
+    return (unsigned int)actor->userData == id;
+  });
+  if (actorIter != actors.end()) {
+    PxRigidActor *actor = *actorIter;
+
+    PxRigidBody *body = dynamic_cast<PxRigidBody *>(actor);
+    if (body) {
+      PxQuat quaternion = actor->getGlobalPose().q;
+      quaternions[0]  = quaternion.x; 
+      quaternions[1]  = quaternion.y; 
+      quaternions[2]  = quaternion.z; 
+      quaternions[3]  = quaternion.w; 
+    }
+  } else {
+    std::cerr << "get quaternion unknown actor id " << id << std::endl;
+    quaternions[0] = 0;
+    quaternions[1] = 0;
+    quaternions[2] = 0;
+    quaternions[3] = 1;
+  }
+}
 void PScene::getVelocity(unsigned int id, float *velocities) {
   auto actorIter = std::find_if(actors.begin(), actors.end(), [&](PxRigidActor *actor) -> bool {
     return (unsigned int)actor->userData == id;

@@ -118,6 +118,9 @@ EMSCRIPTEN_KEEPALIVE void setTransformPhysics(PScene *scene, unsigned int id, fl
 EMSCRIPTEN_KEEPALIVE void getGlobalPositionPhysics(PScene *scene, unsigned int id, float *position) {
   scene->getGlobalPosition(id, position);
 }
+EMSCRIPTEN_KEEPALIVE void getGlobalQuaternionPhysics(PScene *scene, unsigned int id, float *quaternion) {
+  scene->getGlobalQuaternion(id, quaternion);
+}
 EMSCRIPTEN_KEEPALIVE void getVelocityPhysics(PScene *scene, unsigned int id, float *velocity) {
   scene->getVelocity(id, velocity);
 }
