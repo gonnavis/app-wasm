@@ -273,6 +273,13 @@ if [ ! -f physx-timestamp ]; then
   -c \
   && touch physx-timestamp
 fi
+if [ ! -f cut.o ]; then
+  echo 'building cut...'
+  emcc -s WASM=1 -O3 \
+  cut.cc \
+  -DNDEBUG -DPX_SIMD_DISABLED -DPX_EMSCRIPTEN=1 -DPX_COOKING \
+  -c
+fi
 echo 'building main...'
 # m = 64*1024; s = 350000000; Math.floor(s/m)*m;
 # emcc -s WASM=1 -s NO_EXIT_RUNTIME=1 -s TOTAL_MEMORY=419430400 -s ALLOW_MEMORY_GROWTH=1 -O3
@@ -306,7 +313,7 @@ emcc -s WASM=1 -s NO_EXIT_RUNTIME=1 -s TOTAL_MEMORY=209715200 -D__linux__ -s ALL
   -IPhysX/physx/source/geomutils/src/sweep \
   -IRectBinPack/include \
   -Iconcaveman \
-  objectize.cc vector.cc physics.cc cut.cc \
+  objectize.cc vector.cc physics.cc \
   *.o \
   -DNDEBUG -DPX_SIMD_DISABLED -DPX_EMSCRIPTEN=1 -DPX_COOKING \
   -I. \
