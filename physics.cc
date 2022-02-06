@@ -1243,8 +1243,7 @@ void PScene::collideCapsule(float radius, float halfHeight, float *position, flo
   PScene::collide(&geom, position, quaternion, meshPosition, meshQuaternion, maxIter, hit, direction, grounded, id);
 }
 
-void PScene::getCollisionObject(float radius, float halfHeight, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id) {
-  PxCapsuleGeometry geom(radius, halfHeight);
+void PScene::getCollisionObject(PxGeometry *geom, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id) {
   PxTransform geomPose(
     PxVec3{position[0], position[1], position[2]},
     PxQuat{quaternion[0], quaternion[1], quaternion[2], quaternion[3]}
@@ -1268,7 +1267,7 @@ void PScene::getCollisionObject(float radius, float halfHeight, float *position,
       PxTransform meshPose2 = actor->getGlobalPose();
       PxTransform meshPose3 = meshPose * meshPose2;
 
-      bool result = PxGeometryQuery::overlap(geom, geomPose, geometry, meshPose3);
+      bool result = PxGeometryQuery::overlap(*geom, geomPose, geometry, meshPose3);
       if (result) {
         hit = 1;
 
@@ -1285,4 +1284,14 @@ void PScene::getCollisionObject(float radius, float halfHeight, float *position,
       }
     }
   }
+}
+
+void PScene::getBoxCollisionObject(float hx, float hy, float hz, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id) {
+  PxBoxGeometry geom(hx, hy, hz);
+  PScene::getCollisionObject(&geom, position, quaternion, meshPosition, meshQuaternion, hit, id);
+}
+
+void PScene::getCapsuleCollisionObject(float radius, float halfHeight, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id) {
+  PxCapsuleGeometry geom(radius, halfHeight);
+  PScene::getCollisionObject(&geom, position, quaternion, meshPosition, meshQuaternion, hit, id);
 }
