@@ -1157,7 +1157,7 @@ void PScene::raycast(float *origin, float *direction, float *meshPosition, float
   }
 }
 
-void PScene::overlap(PxGeometry *geom, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id, unsigned int *filters, unsigned int numFilters) {
+void PScene::overlap(PxGeometry *geom, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id, unsigned int filter) {
   PxTransform geomPose(
     PxVec3{position[0], position[1], position[2]},
     PxQuat{quaternion[0], quaternion[1], quaternion[2], quaternion[3]}
@@ -1192,14 +1192,7 @@ void PScene::overlap(PxGeometry *geom, float *position, float *quaternion, float
           bool result = PxGeometryQuery::overlap(*geom, geomPose, geometry, meshPose3);
           if (result) {
             unsigned int tempId = (unsigned int)actor->userData;
-            bool isFilter = false;
-            for (unsigned int i = 0; i < numFilters; i++) {
-              if (filters[i] == tempId) {
-                isFilter = true;
-                break;
-              }
-            }
-            if(!isFilter) {
+            if(tempId != filter) {
               anyHadHit = true;
               id = tempId;
               break;
@@ -1215,14 +1208,14 @@ void PScene::overlap(PxGeometry *geom, float *position, float *quaternion, float
   }
 }
 
-void PScene::overlapBox(float hx, float hy, float hz, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id, unsigned int *filters, unsigned int numFilters) {
+void PScene::overlapBox(float hx, float hy, float hz, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id, unsigned int filter) {
   PxBoxGeometry geom(hx, hy, hz);
-  PScene::overlap(&geom, position, quaternion, meshPosition, meshQuaternion, hit, id, filters, numFilters);
+  PScene::overlap(&geom, position, quaternion, meshPosition, meshQuaternion, hit, id, filter);
 }
 
-void PScene::overlapCapsule(float radius, float halfHeight, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id, unsigned int *filters, unsigned int numFilters) {
+void PScene::overlapCapsule(float radius, float halfHeight, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int &hit, unsigned int &id, unsigned int filter) {
   PxCapsuleGeometry geom(radius, halfHeight);
-  PScene::overlap(&geom, position, quaternion, meshPosition, meshQuaternion, hit, id, filters, numFilters);
+  PScene::overlap(&geom, position, quaternion, meshPosition, meshQuaternion, hit, id, filter);
 }
 
 void PScene::collide(PxGeometry *geom, float *position, float *quaternion, float *meshPosition, float *meshQuaternion, unsigned int maxIter, unsigned int &hit, float *direction, unsigned int &grounded, unsigned int &id) {
