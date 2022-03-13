@@ -3,7 +3,10 @@
 #include "geometry/PxCapsuleGeometry.h"
 #include "foundation/PxTransform.h"
  */
+#include <vector>
+#include "vector.h"
 #include "physics.h"
+#include "PathFinder.h"
 
 using namespace physx;
 
@@ -1187,21 +1190,13 @@ void PScene::raycast(float *origin, float *direction, float *meshPosition, float
 float *PScene::getPath(float *_start, float *_dest, bool _isWalk, float _hy, float _heightTolerance, unsigned int _maxIterdetect, unsigned int _maxIterStep, unsigned int _numIgnorePhysicsIds, unsigned int *_ignorePhysicsIds) {
   
   PathFinder pathFinder;
-  pathFinder.init(actors, _hy, _heightTolerance, _maxIterdetect, _maxIterStep, _numIgnorePhysicsIds, _ignorePhysicsIds);
-  Vec start(_start[0], _start[1], _start[2]);
-  Vec dest(_dest[0], _dest[1], _dest[2]);
-  std::vector<Voxel *> waypointResult = pathFinder.getPath(start, dest, _isWalk);
+  float waypointResult = pathFinder.getPath();
 
   float *outputBuffer = (float *)malloc((
-    1 + waypointResult.size() * 3
+    1
   ) * sizeof(float));
 
-  outputBuffer[0] = waypointResult.size();
-  for (int i = 0; i < waypointResult.size(); i++) {
-    outputBuffer[i*3+1] = waypointResult[i]->position.x;
-    outputBuffer[i*3+2] = waypointResult[i]->position.y;
-    outputBuffer[i*3+3] = waypointResult[i]->position.z;
-  }
+  outputBuffer[0] = waypointResult;
 
   return outputBuffer;
 }
