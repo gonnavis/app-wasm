@@ -1391,8 +1391,9 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
   );
   // XXX make this a capsule
   
-  PxCapsuleGeometry geometry(bone.radius, bone.halfHeight);
+  // PxCapsuleGeometry geometry(bone.radius, bone.halfHeight);
   // PxBoxGeometry geometry(bone.scale.x, bone.scale.y, bone.scale.z);
+  PxBoxGeometry geometry(bone.halfHeight, bone.radius, bone.radius);
   PxRigidDynamic *capsule = PxCreateDynamic(*physics, transform, geometry, *material, 1);
   capsule->userData = (void *)bone.id;
   // capsule->setMaxDepenetrationVelocity(1.0f);
