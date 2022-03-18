@@ -1393,8 +1393,22 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
   
   // PxCapsuleGeometry geometry(bone.radius, bone.halfHeight);
   // PxBoxGeometry geometry(bone.scale.x, bone.scale.y, bone.scale.z);
+  // vismark
   PxBoxGeometry geometry(bone.halfHeight, bone.radius, bone.radius);
   PxRigidDynamic *capsule = PxCreateDynamic(*physics, transform, geometry, *material, 1);
+  if(bone.name == "Hips") { // test
+    capsule->setMass(0);
+    capsule->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+    //Lock the motion
+    // capsule->setRigidDynamicLockFlags(
+    //   PxRigidDynamicLockFlag::eLOCK_LINEAR_X | 
+    //   PxRigidDynamicLockFlag::eLOCK_LINEAR_Y | 
+    //   PxRigidDynamicLockFlag::eLOCK_LINEAR_Z | 
+    //   PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | 
+    //   PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
+    //   PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z
+    // );
+  }
   capsule->userData = (void *)bone.id;
   // capsule->setMaxDepenetrationVelocity(1.0f);
   // capsule->setAngularDamping(0.15f);
@@ -1407,10 +1421,11 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
   //   PxRigidBodyExt::updateMassAndInertia(*capsule, 1.0f);
   // }
   // PxRigidBodyExt::updateMassAndInertia(*capsule, 1.0f);
+  capsule->setMass(0.001);
   PxRigidBodyExt::updateMassAndInertia(*capsule, 1.0f);
+  capsule->setMass(0.001);
   scene->addActor(*capsule);
   actors.push_back(capsule);
-  // capsule->setMass(0.001);
   bone.body = capsule;
 
   // capsule->setSolverIterationCounts(10, 10);
@@ -1454,6 +1469,12 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
         child.quaternion
       ); */
 
+      // float sign;
+      // if(bone.name == "Spine" || bone.name == "Hips") {
+      //   sign = 1;
+      // } else {
+      //   sign = -1;
+      // }
       PxTransform jointTransform(
         parent.position +
           parent.quaternion.rotate(PxVec3{parent.boneLength * 0.5f, 0, 0}),
@@ -1502,20 +1523,20 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
       // constexpr float twistLo = -3.14f / 8.f * 0.2;
       // constexpr float twistHi = 3.14f / 8.f * 0.2;
 
-      // joint->setMotion(PxD6Axis::eX, PxD6Motion::eLOCKED);
-      // joint->setMotion(PxD6Axis::eY, PxD6Motion::eLOCKED);
-      // joint->setMotion(PxD6Axis::eZ, PxD6Motion::eLOCKED);
+      joint->setMotion(PxD6Axis::eX, PxD6Motion::eLOCKED);
+      joint->setMotion(PxD6Axis::eY, PxD6Motion::eLOCKED);
+      joint->setMotion(PxD6Axis::eZ, PxD6Motion::eLOCKED);
       // joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eLOCKED);
       // joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLOCKED);
       // joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLOCKED);
 
-      // joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
-      // joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eFREE);
-      // joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
+      joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
+      joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eFREE);
+      joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
 
       // joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLIMITED);
-      joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLIMITED);
-      joint->setSwingLimit(physx::PxJointLimitCone(PxPi/6, PxPi/6));
+      // joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLIMITED);
+      // joint->setSwingLimit(physx::PxJointLimitCone(PxPi/6, PxPi/6));
 
       // vismark
       // if (parent.name != "Hips") {
