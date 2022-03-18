@@ -1481,8 +1481,8 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
       /* PxTransform parentTransform{PxVec3{0, 0, -parent.boneLength * 0.5f}, leftUpQuaternion};
       PxTransform childTransform{PxVec3{0, 0, child.boneLength * 0.5f}, leftUpQuaternion}; */
 
-      PxD6Joint *joint = PxD6JointCreate(
       // PxFixedJoint *joint = PxFixedJointCreate(
+      PxD6Joint *joint = PxD6JointCreate(
         *physics,
         parent.body, parentTransform,
         child.body, childTransform
@@ -1496,10 +1496,10 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
       // std::cout << "---bone.name: " << bone.name << std::endl;
       // std::cout << "---parent.name: " << parent.name << "---child.name: " << child.name << std::endl;
     
-      constexpr float swing0 = 3.14f / 4.f * 0.2;
-      constexpr float swing1 = 3.14f / 4.f * 0.2;
-      constexpr float twistLo = -3.14f / 8.f * 0.2;
-      constexpr float twistHi = 3.14f / 8.f * 0.2;
+      // constexpr float swing0 = 3.14f / 4.f * 0.2;
+      // constexpr float swing1 = 3.14f / 4.f * 0.2;
+      // constexpr float twistLo = -3.14f / 8.f * 0.2;
+      // constexpr float twistHi = 3.14f / 8.f * 0.2;
 
       // joint->setMotion(PxD6Axis::eX, PxD6Motion::eLOCKED);
       // joint->setMotion(PxD6Axis::eY, PxD6Motion::eLOCKED);
@@ -1509,8 +1509,13 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
       // joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLOCKED);
 
       // joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
-      joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eFREE);
+      // joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eFREE);
       // joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
+
+      // joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLIMITED);
+      joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLIMITED);
+      joint->setSwingLimit(physx::PxJointLimitCone(PxPi/6, PxPi/6));
+
       // vismark
       // if (parent.name != "Hips") {
         /* joint->setMotion(PxD6Axis::eX, PxD6Motion::eFREE);
