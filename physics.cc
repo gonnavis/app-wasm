@@ -1,4 +1,6 @@
 #include "physics.h"
+#include <string>
+#include <iostream>
 
 using namespace physx;
 
@@ -1386,6 +1388,19 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
   PxCapsuleGeometry geometry(bone.radius, bone.halfHeight);
   // PxBoxGeometry geometry(bone.scale.x, bone.scale.y, bone.scale.z);
   PxRigidDynamic *capsule = PxCreateDynamic(*physics, transform, geometry, *material, 1);
+  if(bone.name == "Hips") {
+    // capsule->setMass(0);
+    // capsule->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+    //Lock the motion
+    capsule->setRigidDynamicLockFlags(
+      PxRigidDynamicLockFlag::eLOCK_LINEAR_X | 
+      PxRigidDynamicLockFlag::eLOCK_LINEAR_Y | 
+      PxRigidDynamicLockFlag::eLOCK_LINEAR_Z | 
+      PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | 
+      PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
+      PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z
+    );
+  }
   capsule->userData = (void *)bone.id;
   // capsule->setMaxDepenetrationVelocity(1.0f);
   // capsule->setAngularDamping(0.15f);
@@ -1425,13 +1440,34 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
     for (unsigned int i = 0; i < bone.children.size(); i++) {
       Bone &child = *(bone.children[i]);
       
+      // PxTransform parentTransform = PxTransform(
+      //   parent.position,
+      //   parent.quaternion
+      // );
+      // PxTransform childTransform = PxTransform(
+      //   child.position,
+      //   child.quaternion
+      // );
+
+      std::cout << "joint:" << std::endl;
+      std::cout << parent.name << " , " << parent.position.x << " , " << parent.position.y << " , " << parent.position.z << " - " <<
+        parent.quaternion.x << " , " << parent.quaternion.y << " , " << parent.quaternion.z << " , " << parent.quaternion.w << 
+        std::endl;
+      std::cout << child.name << " , " << child.position.x << " , " << child.position.y << " , " << child.position.z << " - " <<
+        child.quaternion.x << " , " << child.quaternion.y << " , " << child.quaternion.z << " , " << child.quaternion.w << 
+        std::endl;
+
+      PxVec3 temp = child.position - parent.position;
+      temp.x *= -1;
+      temp.z *= -1;
+      
       PxTransform parentTransform = PxTransform(
-        parent.position,
-        parent.quaternion
+        temp,
+        PxQuat(0, 0, 0, 1)
       );
       PxTransform childTransform = PxTransform(
-        child.position,
-        child.quaternion
+        PxVec3(0, 0, 0),
+        PxQuat(0, 0, 0, 1)
       );
 
       PxD6Joint *joint = PxD6JointCreate(
@@ -1440,7 +1476,9 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
         child.body, childTransform
       );
       
-      joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
+      // joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
+      // joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eFREE);
+      // joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
       // joint->setTwistLimit(physx::PxJointAngularLimitPair(twistLo, twistHi));
       
       child.joint = joint;
