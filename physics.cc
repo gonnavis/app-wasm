@@ -1486,7 +1486,7 @@ void PScene::registerSkeleton(Bone &bone, Bone *parentBone, unsigned int groupId
       constexpr float twistLo = -3.14f / 8.f * 0.2;
       constexpr float twistHi = 3.14f / 8.f * 0.2;
 
-      joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
+      joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
       // vismark
       // if (parent.name != "Hips") {
         /* joint->setMotion(PxD6Axis::eX, PxD6Motion::eFREE);
