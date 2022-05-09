@@ -167,6 +167,8 @@ PScene::PScene() {
       sceneDesc.cpuDispatcher = mCpuDispatcher;
     }
     sceneDesc.filterShader = ccdFilterShader;
+    sceneDesc.kineKineFilteringMode = PxPairFilteringMode::eKEEP;
+    sceneDesc.staticKineFilteringMode = PxPairFilteringMode::eKEEP;
     scene = physics->createScene(sceneDesc);
     controllerManager = PxCreateControllerManager(*scene);
     controllerManager->setOverlapRecoveryModule(true);
@@ -400,7 +402,7 @@ unsigned int PScene::simulate(unsigned int *ids, float *positions, float *quater
       scales[i*3+2] = s.z;
 
       // std::cout << "check bitfields 1" << std::endl;
-      stateBitfields[i] = simulationEventCallback->stateBitfields[id];
+      stateBitfields[i] = simulationEventCallback->stateBitfields[(unsigned int)actor->userData];
       // std::cout << "check bitfields 2" << std::endl;
     }
   }
