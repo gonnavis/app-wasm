@@ -53,6 +53,10 @@ enum STATE_BITFIELD {
 class SimulationEventCallback2 : public PxSimulationEventCallback {
 public:
   std::map<unsigned int, unsigned int> stateBitfields;
+  std::map<unsigned int, unsigned int> collisionObjectIds;
+  std::map<unsigned int, float> collisionPositionXs;
+  std::map<unsigned int, float> collisionPositionYs;
+  std::map<unsigned int, float> collisionPositionZs;
 
   SimulationEventCallback2();
   virtual ~SimulationEventCallback2();
@@ -83,7 +87,7 @@ public:
   void setJointSwingLimit(PxD6Joint *joint, float yLimitAngle, float zLimitAngle, float contactDist = -1.0f);
   bool updateMassAndInertia(unsigned int id, float shapeDensities);
   float getBodyMass(unsigned int id);
-  unsigned int simulate(unsigned int *ids, float *positions, float *quaternions, float *scales, unsigned int *bitfields, unsigned int numIds, float elapsedTime, float *velocities);
+  unsigned int simulate(unsigned int *ids, float *positions, float *quaternions, float *scales, unsigned int *bitfields, unsigned int *collisionObjectIds, float *collisionPositionXs, float *collisionPositionYs, float *collisionPositionZs, unsigned int numIds, float elapsedTime, float *velocities);
   void raycast(float *origin, float *direction, float maxDist, unsigned int &hit, float *position, float *normal, float &distance, unsigned int &objectId, unsigned int &faceIndex);
   void sweepBox(
     float *origin,

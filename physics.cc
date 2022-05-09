@@ -24,6 +24,9 @@ void SimulationEventCallback2::onContact(const PxContactPairHeader& pairHeader, 
   stateBitfields[actor1Id] |= STATE_BITFIELD::STATE_BITFIELD_COLLIDED;
   stateBitfields[actor2Id] |= STATE_BITFIELD::STATE_BITFIELD_COLLIDED;
 
+  collisionObjectIds[actor1Id] = actor2Id;
+  collisionObjectIds[actor2Id] = actor1Id;
+
   for (uint32_t i = 0; i < nbPairs; i++) {
     const PxContactPair &pair = pairs[i];
 
@@ -32,6 +35,15 @@ void SimulationEventCallback2::onContact(const PxContactPairHeader& pairHeader, 
     
     for (uint32_t j = 0; j < numPoints; j++) {
       PxContactPairPoint &contactPairPoint = contactPairPoints[j];
+      // todo: std::out nbPairs, numPoints
+      if (i == 0 && j == 0) {
+        collisionPositionXs[actor1Id] = contactPairPoint.position.x;
+        collisionPositionYs[actor1Id] = contactPairPoint.position.y;
+        collisionPositionZs[actor1Id] = contactPairPoint.position.z;
+        collisionPositionXs[actor2Id] = contactPairPoint.position.x;
+        collisionPositionYs[actor2Id] = contactPairPoint.position.y;
+        collisionPositionZs[actor2Id] = contactPairPoint.position.z;
+      }
       if (contactPairPoint.normal.y >= 0.0001) { // from B to A is up
         stateBitfields[actor1Id] |= STATE_BITFIELD::STATE_BITFIELD_GROUNDED;
       }
@@ -305,7 +317,7 @@ float PScene::getBodyMass(unsigned int id) {
   }
 }
 
-unsigned int PScene::simulate(unsigned int *ids, float *positions, float *quaternions, float *scales, unsigned int *stateBitfields, unsigned int numIds, float elapsedTime, float *velocities) {
+unsigned int PScene::simulate(unsigned int *ids, float *positions, float *quaternions, float *scales, unsigned int *stateBitfields, unsigned int *collisionObjectIds, float *collisionPositionXs, float *collisionPositionYs, float *collisionPositionZs, unsigned int numIds, float elapsedTime, float *velocities) {
   for (unsigned int i = 0; i < numIds; i++) {
     unsigned int id = ids[i];
     //PxTransform transform(PxVec3(positions[i*3], positions[i*3+1], positions[i*3+2]), PxQuat(quaternions[i*4], quaternions[i*4+1], quaternions[i*4+2], quaternions[i*4+3]));
@@ -329,6 +341,10 @@ unsigned int PScene::simulate(unsigned int *ids, float *positions, float *quater
   }
 
   simulationEventCallback->stateBitfields.clear();
+  simulationEventCallback->collisionObjectIds.clear();
+  simulationEventCallback->collisionPositionXs.clear();
+  simulationEventCallback->collisionPositionYs.clear();
+  simulationEventCallback->collisionPositionZs.clear();
 
   scene->simulate(elapsedTime);
   PxU32 error;
@@ -403,6 +419,10 @@ unsigned int PScene::simulate(unsigned int *ids, float *positions, float *quater
 
       // std::cout << "check bitfields 1" << std::endl;
       stateBitfields[i] = simulationEventCallback->stateBitfields[(unsigned int)actor->userData];
+      collisionObjectIds[i] = simulationEventCallback->collisionObjectIds[(unsigned int)actor->userData];
+      collisionPositionXs[i] = simulationEventCallback->collisionPositionXs[(unsigned int)actor->userData];
+      collisionPositionYs[i] = simulationEventCallback->collisionPositionYs[(unsigned int)actor->userData];
+      collisionPositionZs[i] = simulationEventCallback->collisionPositionZs[(unsigned int)actor->userData];
       // std::cout << "check bitfields 2" << std::endl;
     }
   }
@@ -1126,6 +1146,10 @@ void PScene::removeGeometry(unsigned int id) {
     actor->release();
     actors.erase(actorIter);
     simulationEventCallback->stateBitfields.erase(id);
+    simulationEventCallback->collisionObjectIds.erase(id);
+    simulationEventCallback->collisionPositionXs.erase(id);
+    simulationEventCallback->collisionPositionYs.erase(id);
+    simulationEventCallback->collisionPositionZs.erase(id);
   } else {
     std::cerr << "remove unknown actor id " << id << std::endl;
   }
