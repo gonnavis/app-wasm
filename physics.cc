@@ -27,15 +27,21 @@ void SimulationEventCallback2::onContact(const PxContactPairHeader& pairHeader, 
   collisionObjectIds[actor1Id] = actor2Id;
   collisionObjectIds[actor2Id] = actor1Id;
 
+  std::cout << "nbPairs: " << nbPairs << std::endl;
+
   for (uint32_t i = 0; i < nbPairs; i++) {
     const PxContactPair &pair = pairs[i];
 
-    PxContactPairPoint contactPairPoints[32];
-    uint32_t numPoints = pair.extractContacts(contactPairPoints, sizeof(contactPairPoints) / sizeof(contactPairPoints[0]));
+    PxContactPairPoint contactPairPoints[64];
+    // uint32_t numPoints = pair.extractContacts(contactPairPoints, sizeof(contactPairPoints) / sizeof(contactPairPoints[0]));
+    uint32_t numPoints = pair.extractContacts(contactPairPoints, 64);
+
+    std::cout << "numPoints: " << numPoints << std::endl;
     
     for (uint32_t j = 0; j < numPoints; j++) {
       PxContactPairPoint &contactPairPoint = contactPairPoints[j];
-      // todo: std::out nbPairs, numPoints
+
+      std::cout << "contactPairPoint.position: " << contactPairPoint.position.x << " , " << contactPairPoint.position.y << " , " << contactPairPoint.position.z << std::endl;
       if (i == 0 && j == 0) {
         collisionPositionXs[actor1Id] = contactPairPoint.position.x;
         collisionPositionYs[actor1Id] = contactPairPoint.position.y;
