@@ -32,9 +32,10 @@ void SimulationEventCallback2::onContact(const PxContactPairHeader& pairHeader, 
   for (uint32_t i = 0; i < nbPairs; i++) {
     const PxContactPair &pair = pairs[i];
 
-    PxContactPairPoint contactPairPoints[64];
+    const PxU32 bufferSize = 64;
+    PxContactPairPoint contactPairPoints[bufferSize];
     // uint32_t numPoints = pair.extractContacts(contactPairPoints, sizeof(contactPairPoints) / sizeof(contactPairPoints[0]));
-    uint32_t numPoints = pair.extractContacts(contactPairPoints, 64);
+    uint32_t numPoints = pair.extractContacts(contactPairPoints, bufferSize);
 
     std::cout << "numPoints: " << numPoints << std::endl;
     
@@ -124,14 +125,18 @@ PxFilterFlags ccdFilterShader(
     // do not colide
     pairFlags &= ~PxPairFlag::eSOLVE_CONTACT;
     pairFlags &= ~PxPairFlag::eNOTIFY_TOUCH_FOUND;
+    // pairFlags &= ~PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
     pairFlags &= ~PxPairFlag::eDETECT_DISCRETE_CONTACT;
-    pairFlags &= ~PxPairFlag::eDETECT_CCD_CONTACT;
+    // pairFlags &= ~PxPairFlag::eDETECT_CCD_CONTACT;
+    pairFlags &= ~PxPairFlag::eNOTIFY_CONTACT_POINTS;
   } else {
     // maybe colide
     pairFlags |= PxPairFlag::eSOLVE_CONTACT;
     pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+    // pairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
     pairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
-    pairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
+    // pairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
+    pairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
   }
   /* if (filterData0.word1 == TYPE::TYPE_CAPSULE || filterData1.word1 == TYPE::TYPE_CAPSULE) {
     pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
@@ -450,15 +455,15 @@ void PScene::addCapsuleGeometry(
   PxCapsuleGeometry geometry(radius, halfHeight);
   
   // const bool physicsEnabled = (bool)(flags & PhysicsObjectFlags::ENABLE_PHYSICS);
-  const bool ccdEnabled = (bool)(flags & PhysicsObjectFlags::ENABLE_CCD);
+  // const bool ccdEnabled = (bool)(flags & PhysicsObjectFlags::ENABLE_CCD);
 
   PxRigidActor *actor;
   if (dynamic) {
     PxRigidDynamic *body = PxCreateDynamic(*physics, transform, geometry, *material, 1);
     PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
-    if (ccdEnabled) {
+    // if (ccdEnabled) {
       body->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
-    }
+    // }
     actor = body;
   } else {
     PxRigidStatic *body = PxCreateStatic(*physics, transform, geometry, *material);
